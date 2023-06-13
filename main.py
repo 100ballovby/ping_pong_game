@@ -2,7 +2,6 @@ import sys
 import pygame as pg
 from random import choice
 
-
 def ball_start(obj):
     global speed_x, speed_y, ball_moving, score_time
     obj.center = (W // 2, H // 2)
@@ -36,14 +35,27 @@ def ball_move(obj):
 
     if obj.top <= 0 or obj.bottom >= H:
         speed_y *= -1
+        pg.mixer.Sound.play(pong_sound)
     elif obj.left <= 0:
         score_time = pg.time.get_ticks()
         player_score += 1
+        pg.mixer.Sound.play(score_sound)
     elif obj.right >= W:
         score_time = pg.time.get_ticks()
         opponent_score += 1
-    elif obj.colliderect(player) or obj.colliderect(opponent):
-        speed_x *= -1
+        pg.mixer.Sound.play(score_sound)
+    if obj.colliderect(player):
+        pg.mixer.Sound.play(pong_sound)
+        if abs(obj.right - player.left) < 10:
+            speed_x *= -1
+        elif abs(obj.bottom - player.top) < 10 or abs(obj.top - player.bottom) < 10:
+            speed_x *= -1
+    elif obj.colliderect(opponent):
+        pg.mixer.Sound.play(pong_sound)
+        if abs(obj.left - opponent.right) < 10:
+            speed_x *= -1
+        elif abs(obj.bottom - opponent.top) < 10 or abs(obj.top - opponent.bottom) < 10:
+            speed_x *= -1
 
 
 def player_motion(obj, s):
@@ -89,6 +101,12 @@ ball_moving = False
 score_time = True
 speed_x = speed * choice([-1, 1])
 speed_y = speed * choice([-1, 1])
+
+pg.mixer.init()  # инициализация звуков
+pong_sound = pg.mixer.Sound('hit.mp3')
+score_sound = pg.mixer.Sound('lose.wav')
+pong_sound.set_volume(0.2)  # 20%
+score_sound.set_volume(0.1)  # 10%
 
 # scores
 player_score, opponent_score = 0, 0
