@@ -88,11 +88,6 @@ GRAY = (230, 230, 230)
 WHITE = (255, 255, 255)
 VIOLET = (230, 61, 245)
 
-# игровые сущности
-player = pg.Rect(W - 20, H // 2, 10, 150)
-opponent = pg.Rect(10, H // 2, 10, 150)
-ball = pg.Rect(W // 2 - 15, H // 2 - 15, 30, 30)
-
 
 speed = 7
 p_speed = 0
@@ -118,6 +113,17 @@ pg.init()  # инициализируем pygame
 screen = pg.display.set_mode((W, H))  # создаем экран игры разрешением 1280х720px
 pg.display.set_caption('Ping Pong | PyGame')
 
+player_img = pg.image.load('paddle.jpg').convert()
+opponent_img = pg.image.load('paddle.jpg').convert()
+
+ball_img = pg.image.load('tennis.png').convert_alpha()
+ball_img = pg.transform.scale(ball_img, (50, 50))
+
+player = player_img.get_rect()
+opponent = opponent_img.get_rect()
+ball = ball_img.get_rect()
+player.x, player.y = W - 30, H // 2
+
 while True:  # цикл игры
     clock.tick(FPS)
     for event in pg.event.get():  # обработчик событий pygame
@@ -126,12 +132,12 @@ while True:  # цикл игры
             sys.exit()
 
     screen.fill(GRAY)
-    pg.draw.rect(screen, VIOLET, player)
-    pg.draw.rect(screen, VIOLET, opponent)
     pg.draw.aaline(screen, WHITE, [W // 2, 0], [W // 2, H])
-    pg.draw.ellipse(screen, VIOLET, ball)
     player_score_text = score_font.render(str(player_score), True, VIOLET)
     screen.blit(player_score_text, [W // 2 + 50, H * 0.25])
+    screen.blit(ball_img, ball)
+    screen.blit(player_img, player)
+    screen.blit(opponent_img, opponent)
 
     opponent_score_text = score_font.render(str(opponent_score), True, VIOLET)
     screen.blit(opponent_score_text, [W // 2 - 100, H * 0.25])
